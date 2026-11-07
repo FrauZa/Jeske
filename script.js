@@ -420,6 +420,40 @@ const learningModules = {
             { frage: 'Klatsche jetzt mit, während du sprichst.', antwort: 'Bei jedem Stück einmal klatschen.' },
             { frage: 'Wie oft hast du geklatscht?', antwort: 'So viele Silben hat das Wort.' }
         ]
+    },
+
+    lesen: {
+        kachel: 'Kurze Wörter Silbe für Silbe lesen',
+        title: 'Erste Leseübungen',
+        category: 'Lesen',
+        color: 'modul5',
+        description: 'Lies das kurze Wort langsam. Tippe dann auf das passende Bild.',
+        blattAnleitung: 'Lies jedes Wort langsam und kreise das passende Bild ein.',
+        steps: [
+            'Lies die Silben langsam: O - ma.',
+            'Verbinde die Silben: O-ma. Das Wort heißt Oma.',
+            'Finde das Bild, das zum Wort Oma passt.'
+        ],
+        explanation: {
+            lesewort: 'Oma',
+            bilder: [
+                { name: 'oma', emoji: '👵', wort: 'Oma' },
+                { name: 'opa', emoji: '👴', wort: 'Opa' },
+                { name: 'lama', emoji: '🦙', wort: 'Lama' }
+            ],
+            highlight: [[], ['oma'], ['oma']],
+            working: [
+                'O ... ma',
+                'O-ma wird Oma.',
+                'Das Bild zeigt Oma.'
+            ],
+            caption: 'Lies jede Silbe. Dann verbinde sie zum Wort.'
+        },
+        coachSchritte: task => [
+            { frage: 'Schau dir das Wort genau an. Welchen Laut hörst du am Anfang?', antwort: 'Zeige beim Lesen mit dem Finger auf die Buchstaben.' },
+            { frage: `Lies das Wort in Silben: ${task.silben}.`, antwort: 'Lies die Teile langsam nacheinander.' },
+            { frage: 'Welches Bild passt zu dem Wort, das du gelesen hast?', antwort: 'Tippe auf das passende Bild.' }
+        ]
     }
 };
 
@@ -451,6 +485,11 @@ const guidedExplanations = {
         { type: 'choice', options: ['Zi-tro-ne', 'Zitro-ne'], answer: 'Zi-tro-ne', ask: 'Wie teilst du das Wort beim Sprechen?', hint: 'Sprich es wie ein Roboter.' },
         { type: 'choice', options: ['1', '2', '3'], answer: '3', ask: 'Wie oft klatschst du bei Zi-tro-ne?', hint: 'Klatsche einmal mit.' },
         { type: 'choice', options: ['1 Silbe', '2 Silben', '3 Silben'], answer: '3 Silben', ask: 'Wie viele Silben hat Zitrone?', hint: 'So oft, wie du geklatscht hast.' }
+    ],
+    lesen: [
+        { type: 'choice', options: ['O - ma', 'Om - a'], answer: 'O - ma', ask: 'Wie teilst du Oma in zwei Silben?', hint: 'Sprich langsam: O ... ma.' },
+        { type: 'choice', options: ['Oma', 'Opa'], answer: 'Oma', ask: 'Was steht da: Oma oder Opa?', hint: 'Am Ende hörst du ein langes A.' },
+        { type: 'pick', target: 'oma', ask: 'Tippe auf das Bild, das zum Wort Oma passt.', hint: 'Lies das Wort noch einmal langsam.' }
     ]
 };
 
@@ -470,7 +509,36 @@ function createTask(moduleId) {
     if (moduleId === 'reime') return reimAufgabe();
     if (moduleId === 'reimAusreisser') return ausreisserAufgabe();
     if (moduleId === 'anlaute') return anlautAufgabe();
+    if (moduleId === 'lesen') return leseAufgabe();
     return silbenAufgabe();
+}
+
+const leseWoerter = [
+    { wort: 'Oma', emoji: '👵', silben: 'O - ma' },
+    { wort: 'Opa', emoji: '👴', silben: 'O - pa' },
+    { wort: 'Mama', emoji: '👩', silben: 'Ma - ma' },
+    { wort: 'Lama', emoji: '🦙', silben: 'La - ma' },
+    { wort: 'Limo', emoji: '🥤', silben: 'Li - mo' },
+    { wort: 'Esel', emoji: '🫏', silben: 'E - sel' }
+];
+
+function leseAufgabe() {
+    const wort = zufall(leseWoerter);
+    const ablenker = mische(leseWoerter.filter(eintrag => eintrag !== wort)).slice(0, 2);
+    const options = mische([wort].concat(ablenker));
+
+    return {
+        frage: 'Lies das Wort. Welches Bild passt?',
+        leseWort: wort.wort,
+        silben: wort.silben,
+        hoeren: [],
+        bild: null,
+        options: karten(options.map(eintrag => ({ wort: eintrag.wort, emoji: eintrag.emoji }))),
+        answerIndex: options.indexOf(wort),
+        loesung: `${wort.silben.replace(' - ', '')} heißt ${wort.wort}.`,
+        blatt: wort.wort,
+        blattGross: true
+    };
 }
 
 function reimAufgabe() {
@@ -557,19 +625,23 @@ function silbenAufgabe() {
 
 /* Reihenfolge der Kacheln und ihre Symbole. */
 function initLearningModules() {
-    const grid = document.getElementById('moduleGrid');
-    if (!grid) return;
-    const ids = ['reime', 'reimAusreisser', 'anlaute', 'silben'];
-    const emojis = ['🎵', '🔍', '🅰️', '👏'];
+    const gruppen = [
+        { gridId: 'moduleGrid', ids: ['reime', 'reimAusreisser', 'anlaute', 'silben'], emojis: ['🎵', '🔍', '🅰️', '👏'] },
+        { gridId: 'readingModuleGrid', ids: ['lesen'], emojis: ['📖'] }
+    ];
 
-    grid.innerHTML = ids.map((id, i) => {
-        const m = learningModules[id];
-        return `<button class="operation-btn ${m.color}" onclick="openLearningModule('${id}')">
-                    <span class="emoji">${emojis[i] || '✦'}</span>
-                    <span class="text">${m.title}</span>
-                    <span class="card-hint">${m.kachel || ''}</span>
-                </button>`;
-    }).join('');
+    gruppen.forEach(gruppe => {
+        const grid = document.getElementById(gruppe.gridId);
+        if (!grid) return;
+        grid.innerHTML = gruppe.ids.map((id, i) => {
+            const m = learningModules[id];
+            return `<button class="operation-btn ${m.color}" onclick="openLearningModule('${id}')">
+                        <span class="emoji">${gruppe.emojis[i] || '✦'}</span>
+                        <span class="text">${m.title}</span>
+                        <span class="card-hint">${m.kachel || ''}</span>
+                    </button>`;
+        }).join('');
+    });
 }
 
 
@@ -687,6 +759,13 @@ function updatePracticeTimer() {
 /* Die Hoerkarte ist der Kern der App: das gesuchte Wort steht
    NICHT da, es wird nur gesprochen. Antippen wiederholt es. */
 function taskHtml(task) {
+    if (task.leseWort) {
+        return `
+            <button class="lese-karte" onclick="lesVor('${task.leseWort}')">
+                <span class="lese-wort">${task.leseWort}</span>
+                <span class="lese-hinweis">🔊 Wort anhören</span>
+            </button>`;
+    }
     /* Drei Gesichter derselben Karte:
        - ein Buchstabe steht gross da und wird vorgelesen (Anlaute)
        - mehrere Woerter werden nacheinander gesprochen (Ausreisser)
@@ -843,6 +922,9 @@ function renderExplanationVisual() {
         </span>`).join('');
 
     document.getElementById('explanationVisual').innerHTML = `
+        ${ex.lesewort ? `<button class="lese-karte" onclick="lesVor('${ex.lesewort}')">
+            <span class="lese-wort">${ex.lesewort}</span><span class="lese-hinweis">🔊 Wort anhören</span>
+         </button>` : ''}
         ${ex.buchstabe ? `<button class="hoer-karte klein buchstabe" onclick="lesVor('${ex.buchstabe}')">
             <span class="buchstabe-zeichen">${ex.buchstabe}</span><span class="hoer-hint">🔊 Tippen zum Hören</span>
          </button>` : ''}
