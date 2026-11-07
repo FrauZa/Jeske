@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeske – Hören und Reimen</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Globaler Hintergrund -->
+    <div class="background-placeholder"></div>
+
+    <!-- ============================================
+         Startbildschirm (Hauptmenü)
+
+         Das Kachelgitter füllt initLearningModules()
+         aus dem Modul-Register in script.js.
+         ============================================ -->
+    <div id="startScreen" class="screen active">
+        <div class="content">
+            <h1 class="main-title">Jeske</h1>
+            <div class="module-intro">
+                <span class="module-kicker">Hören, reimen, klatschen</span>
+                <p>Die App sagt ein Wort. Du suchst das passende Bild.</p>
+            </div>
+
+            <section class="module-group">
+                <div class="module-group-heading">
+                    <span class="group-icon">👂</span>
+                    <div><h2>Genau hinhören</h2><p>Vier Aufgaben rund um den Klang von Wörtern.</p></div>
+                </div>
+                <!-- Wird von initLearningModules() gefüllt -->
+                <div id="moduleGrid" class="button-grid"></div>
+            </section>
+
+            <p class="start-hinweis">🔊 Ton bitte anlassen – ohne Ton geht es nicht.</p>
+        </div>
+    </div>
+
+    <!-- ============================================
+         Gemeinsamer Screen für ALLE Lernmodule
+
+         Dieser Bildschirm wird nicht kopiert, wenn eine
+         Aufgabe dazukommt - er wird aus learningModules gefüllt.
+         ============================================ -->
+    <div id="learningModuleScreen" class="screen learning-module-screen">
+        <div class="header learning-header">
+            <button class="back-btn" onclick="showScreen('startScreen')"><span class="arrow">←</span> Aufgaben</button>
+            <span class="learning-breadcrumb">Jeske</span>
+        </div>
+        <div class="content learning-content">
+            <div class="learning-hero">
+                <span class="module-kicker" id="learningModuleCategory">Thema</span>
+                <h2 id="learningModuleTitle">Titel</h2>
+                <p id="learningModuleDescription"></p>
+            </div>
+
+            <div class="learning-actions">
+                <button class="learning-action active" onclick="showLearningPanel('practicePanel', this)"><span>✦</span><strong>Üben</strong><small>Aufgaben lösen</small></button>
+                <button class="learning-action" onclick="showLearningPanel('explainPanel', this)"><span>☼</span><strong>Erkläraufgabe</strong><small>Schritt für Schritt</small></button>
+                <button class="learning-action" onclick="showLearningPanel('worksheetPanel', this)"><span>▣</span><strong>Arbeitsblatt</strong><small>Zum Ausdrucken</small></button>
+            </div>
+
+            <!-- ---------- Reiter 1: Üben ---------- -->
+            <section id="practicePanel" class="learning-panel active">
+                <div id="practiceStartChoice" class="practice-start-choice">
+                    <h3>Wie möchtest du üben?</h3>
+                    <p>Gegen die Zeit oder in deinem eigenen Tempo?</p>
+                    <div class="practice-start-buttons">
+                        <button class="check-btn strategy-button" onclick="startPractice(true)">⏱️ Mit Zeitlimit <small>3 Minuten</small></button>
+                        <button class="check-btn strategy-button secondary" onclick="startPractice(false)">🌿 In deinem Tempo <small>Ohne Zeitlimit</small></button>
+                    </div>
+                </div>
+
+                <div id="practiceExerciseContent" hidden>
+                    <div class="panel-heading">
+                        <div><span class="module-kicker">Deine Aufgabe</span><h3 id="practicePrompt">Bereit?</h3></div>
+                        <div class="practice-tools">
+                            <button class="coach-header-btn" id="coachToggle" onclick="toggleCoach()">
+                                <span class="coach-icon">🧑‍🏫</span><span class="coach-label">Lerncoach</span>
+                            </button>
+                            <span class="practice-score" id="practiceScore">0 Punkte</span>
+                            <span class="practice-timer" id="practiceTimer" hidden>3:00</span>
+                        </div>
+                    </div>
+
+                    <div id="coachPanel" class="inline-coach-panel" aria-live="polite">
+                        <div class="inline-coach-avatar">🧑‍🏫</div>
+                        <div class="inline-coach-body">
+                            <div id="coachMessage" class="inline-coach-message"></div>
+                            <div class="inline-coach-controls">
+                                <button type="button" class="vorlese-btn" onclick="lesVorAusElement(document.getElementById('coachMessage'))" aria-label="Vorlesen" title="Vorlesen">🔊</button>
+                                <button class="coach-zurueck-btn" onclick="coachBack()">← Zurück</button>
+                                <button class="coach-weiter-btn" onclick="coachNext()">Weiter →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="practiceTask" class="hoer-aufgabe"></div>
+                    <div id="practiceOptions" class="bild-optionen"></div>
+                    <p id="practiceFeedback" class="strategy-feedback" aria-live="polite"></p>
+                    <button class="next-btn strategy-button" id="practiceNext" onclick="nextPracticeTask()" hidden>Nächste Aufgabe</button>
+                </div>
+            </section>
+
+            <!-- ---------- Reiter 2: Erkläraufgabe ---------- -->
+            <section id="explainPanel" class="learning-panel">
+                <div class="panel-heading"><div><span class="module-kicker">Erkläraufgabe</span><h3>So kannst du hören</h3></div></div>
+                <div class="guided-progress"><span id="explanationProgress">Schritt 1</span><span class="guided-progress-line"><i id="explanationProgressBar"></i></span></div>
+                <div id="explanationVisual" class="explanation-visual"></div>
+                <div id="explanationInteraction" class="explanation-interaction" aria-live="polite"></div>
+                <div id="explanationSteps" class="learning-steps"></div>
+                <div class="guided-controls">
+                    <button class="coach-zurueck-btn" id="explanationBack" onclick="previousExplanationStep()">← Zurück</button>
+                    <button class="coach-weiter-btn" id="explanationNext" onclick="nextExplanationStep()">Weiter →</button>
+                </div>
+            </section>
+
+            <!-- ---------- Reiter 3: Arbeitsblatt ---------- -->
+            <section id="worksheetPanel" class="learning-panel">
+                <div class="panel-heading"><div><span class="module-kicker">Für zu Hause</span><h3>Arbeitsblatt erstellen</h3></div></div>
+                <p class="panel-copy" id="worksheetIntro">Erzeuge zehn passende Aufgaben. Die Lösungen stehen auf einer zweiten Seite.</p>
+                <div class="worksheet-settings">
+                    <button class="check-btn strategy-button" onclick="printWorksheet()">Arbeitsblatt drucken</button>
+                    <button class="check-btn strategy-button secondary" onclick="renderWorksheetPreview()">Neue Aufgaben</button>
+                </div>
+                <div id="worksheetPreview" class="worksheet-preview"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

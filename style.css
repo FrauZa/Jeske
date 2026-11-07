@@ -1,0 +1,346 @@
+/* ============================================
+   CSS-Variablen - eine Farbe je Aufgabenformat
+   ============================================ */
+:root {
+    --color-modul1: #66BB6A;  --color-modul1-light: #A5D6A7;   /* gruen  - Reime hoeren  */
+    --color-modul2: #42A5F5;  --color-modul2-light: #90CAF9;   /* blau   - Ausreisser    */
+    --color-modul3: #FF9800;  --color-modul3-light: #FFCC80;   /* orange - Anlaute       */
+    --color-modul4: #9C27B0;  --color-modul4-light: #E1BEE7;   /* lila   - Silben        */
+
+    --color-akzent: #f57c00;      /* Reiter, Rahmen, Hervorhebungen */
+    --color-text: #333;
+    --color-bg: #f5f5f5;
+    --color-white: #ffffff;
+    --shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    --shadow-hover: 0 6px 20px rgba(0, 0, 0, .2);
+}
+
+/* ============================================
+   Basis
+   ============================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Outfit', 'Comic Sans MS', cursive, sans-serif;
+    color: var(--color-text);
+    background: var(--color-bg);
+    overflow-x: hidden;
+}
+
+.background-placeholder {
+    position: fixed; inset: 0;
+    background-image: url('background.jpg');
+    background-size: cover; background-position: center;
+    opacity: .85; z-index: -1;
+}
+
+/* ============================================
+   Screen-Verwaltung: sichtbar ist nur .active
+   ============================================ */
+.screen { display: none; min-height: 100vh; padding: 20px; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+.content { position: relative; z-index: 1; max-width: 900px; width: 100%; }
+
+.header {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; max-width: 900px; gap: 15px; margin-bottom: 10px;
+}
+
+.main-title {
+    font-size: 3.4rem; font-weight: 700; color: var(--color-white);
+    text-align: center; margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, .3);
+}
+
+.module-intro { text-align: center; color: #fff; margin-bottom: 25px; text-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.module-kicker { display: inline-block; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+
+.start-hinweis {
+    text-align: center; color: #fff; font-size: .95rem;
+    text-shadow: 0 2px 6px rgba(0,0,0,.4); margin-top: 6px;
+}
+
+/* ============================================
+   Kacheln und Gruppen
+   ============================================ */
+.module-group { margin-bottom: 20px; padding: 4px 0; }
+.module-group-heading {
+    display: flex; align-items: center; gap: 14px; margin: 0 20px 4px;
+    color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,.35);
+}
+.module-group-heading .group-icon { font-size: 1.8rem; }
+.module-group-heading h2 { font-size: 1.45rem; }
+.module-group-heading p { color: rgba(255,255,255,.9); margin-top: 3px; }
+
+.button-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 20px; }
+
+.operation-btn {
+    min-height: 155px; border: none; border-radius: 20px;
+    font-family: inherit; font-size: 1.3rem; font-weight: 600;
+    color: #fff; cursor: pointer; padding: 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s;
+}
+.operation-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.operation-btn .emoji { font-size: 2.8rem; }
+.card-hint { font-size: .8rem; font-weight: 400; opacity: .92; }
+
+/* Eine Farbe je Modul - der Verlauf macht die Kachel freundlicher. */
+.modul1 { background: linear-gradient(135deg, var(--color-modul1), var(--color-modul1-light)); }
+.modul2 { background: linear-gradient(135deg, var(--color-modul2), var(--color-modul2-light)); }
+.modul3 { background: linear-gradient(135deg, var(--color-modul3), var(--color-modul3-light)); }
+.modul4 { background: linear-gradient(135deg, var(--color-modul4), var(--color-modul4-light)); }
+.modul1-color { color: var(--color-modul1); }
+.modul2-color { color: var(--color-modul2); }
+.modul3-color { color: var(--color-modul3); }
+.modul4-color { color: var(--color-modul4); }
+
+/* ============================================
+   Allgemeine Bausteine
+   ============================================ */
+.check-btn, .next-btn {
+    font-family: inherit; font-size: 1.15rem; font-weight: 600;
+    padding: 14px 26px; border: none; border-radius: 14px;
+    background: var(--color-white); cursor: pointer; box-shadow: var(--shadow);
+}
+.check-btn:hover, .next-btn:hover { box-shadow: var(--shadow-hover); }
+
+.back-btn {
+    font-family: inherit; font-size: 1rem; font-weight: 600;
+    padding: 10px 18px; border: none; border-radius: 12px;
+    background: rgba(255,255,255,.9); cursor: pointer; box-shadow: var(--shadow);
+}
+.back-btn .arrow { margin-right: 6px; }
+
+/* ============================================
+   Lernmodul-Screen: Hero, Reiter, Panels
+   ============================================ */
+.learning-module-screen.active { justify-content: flex-start; padding-top: 20px; }
+.learning-header { justify-content: space-between; }
+.learning-breadcrumb { color: #fff; font-weight: 600; text-shadow: 0 2px 5px rgba(0,0,0,.35); }
+
+.learning-hero { padding: 30px 34px; border-radius: 22px; background: #fff8f0; box-shadow: var(--shadow); }
+.learning-hero h2 { margin: 4px 0 7px; font-size: clamp(2rem, 5vw, 3.2rem); color: #263238; }
+.learning-hero p { color: #616161; font-size: 1.1rem; }
+.learning-hero .module-kicker { color: var(--color-akzent); }
+
+.learning-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.learning-action {
+    border: 2px solid transparent; border-radius: 15px; background: #fff;
+    padding: 15px; text-align: left; cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,.1); font-family: inherit; color: #263238;
+}
+.learning-action span { display: block; color: var(--color-akzent); font-size: 1.7rem; }
+.learning-action strong, .learning-action small { display: block; margin-top: 4px; }
+.learning-action small { color: #777; }
+.learning-action.active { border-color: var(--color-akzent); background: #fff3e0; }
+
+.learning-panel { display: none; background: #fff; border-radius: 20px; padding: 26px; box-shadow: var(--shadow); }
+.learning-panel.active { display: block; }
+
+.panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; flex-wrap: wrap; margin-bottom: 18px; }
+.panel-heading h3 { font-size: 1.5rem; }
+.panel-heading .module-kicker { color: var(--color-akzent); }
+.panel-copy { color: #666; margin-bottom: 15px; }
+
+/* Startwahl im Uebe-Reiter */
+.practice-start-choice { text-align: center; }
+.practice-start-choice h3 { font-size: 1.5rem; margin-bottom: 6px; }
+.practice-start-choice p { color: #666; margin-bottom: 18px; }
+.practice-start-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+.strategy-button { background: var(--color-akzent); color: #fff; }
+.strategy-button small { display: block; font-weight: 400; opacity: .9; font-size: .8rem; }
+.strategy-button.secondary { background: #eceff1; color: #37474f; }
+
+.practice-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.practice-score, .practice-timer { background: #f1f1f1; border-radius: 10px; padding: 6px 12px; font-weight: 700; }
+.coach-header-btn {
+    display: flex; align-items: center; gap: 8px; font-family: inherit;
+    border: 2px solid #eee; border-radius: 12px; background: #fff;
+    padding: 8px 14px; cursor: pointer;
+}
+.coach-header-btn.active { border-color: var(--color-akzent); background: #fff3e0; }
+.coach-icon { font-size: 1.3rem; }
+
+/* Lerncoach-Panel: nur sichtbar, wenn eingeschaltet */
+.inline-coach-panel {
+    display: none; gap: 14px; align-items: flex-start;
+    background: #fff3e0; border-radius: 16px; padding: 16px; margin-bottom: 18px;
+}
+.inline-coach-panel.visible { display: flex; }
+.inline-coach-avatar { font-size: 2rem; }
+.inline-coach-body { flex: 1; }
+.inline-coach-message { font-size: 1.1rem; line-height: 1.5; }
+.inline-coach-message em { color: #6d4c41; }
+.inline-coach-controls { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.coach-zurueck-btn, .coach-weiter-btn, .vorlese-btn {
+    font-family: inherit; font-size: .95rem; border: none; border-radius: 10px;
+    padding: 8px 14px; cursor: pointer; background: #fff; box-shadow: var(--shadow);
+}
+.coach-weiter-btn { background: var(--color-akzent); color: #fff; }
+.coach-zurueck-btn:disabled, .coach-weiter-btn:disabled { opacity: .4; cursor: default; }
+
+/* ============================================
+   Die Höraufgabe
+
+   Das gesuchte Wort steht bewusst NICHT da - es wird nur
+   gesprochen. Die Karte ist gross genug, dass ein Kind sie
+   auch beim zehnten Mal noch sicher trifft.
+   ============================================ */
+.hoer-aufgabe { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 10px 0 24px; }
+
+.aufgaben-bild {
+    font-size: clamp(4rem, 16vw, 6.5rem); line-height: 1.1;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,.15));
+}
+
+.hoer-karte {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-family: inherit; cursor: pointer;
+    min-width: 240px; padding: 20px 34px;
+    border: 4px solid var(--color-akzent); border-radius: 24px;
+    background: #fff8f0; box-shadow: var(--shadow);
+    transition: transform .15s;
+}
+.hoer-karte:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.hoer-karte:active { transform: scale(.97); }
+.hoer-icon { font-size: 2.8rem; }
+.hoer-text { font-size: 1.5rem; font-weight: 700; color: #5d4037; }
+.hoer-hint { font-size: .85rem; color: #8d6e63; }
+/* Der Buchstabe steht gross auf der Karte und wird beim Tippen
+   vorgelesen - Zeichen und Laut gehoeren zusammen. */
+.buchstabe-zeichen {
+    font-size: 4.4rem; font-weight: 700; line-height: 1;
+    color: #5d4037; letter-spacing: .02em;
+}
+.hoer-karte.buchstabe { padding: 16px 40px; }
+
+.hoer-karte.klein { min-width: 0; padding: 12px 24px; margin: 0 auto 16px; }
+.hoer-karte.klein .buchstabe-zeichen { font-size: 3rem; }
+.hoer-karte.klein .hoer-icon { font-size: 1.8rem; }
+.hoer-karte.klein .hoer-text { font-size: 1.2rem; }
+
+/* ============================================
+   Die Bildkarten zum Antworten
+   ============================================ */
+.bild-optionen { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+
+.bild-option {
+    position: relative; font-family: inherit; cursor: pointer;
+    width: 150px; height: 150px;
+    display: flex; align-items: center; justify-content: center;
+    border: 4px solid #eceff1; border-radius: 22px; background: #fff;
+    box-shadow: var(--shadow); transition: transform .15s, border-color .15s;
+}
+.bild-option:hover:enabled { border-color: var(--color-akzent); transform: translateY(-3px); }
+.bild-option:disabled { cursor: default; }
+.bild-emoji { font-size: 4.2rem; line-height: 1; }
+
+/* Das kleine Lautsprecher-Eck: verrät, wie das Bild heisst.
+   Ohne das raet ein Kind bei 🌳 vielleicht "Wald" statt "Baum". */
+.bild-hoeren {
+    position: absolute; right: 6px; bottom: 6px;
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; background: #eceff1; color: #37474f;
+}
+.bild-option:hover:enabled .bild-hoeren { background: #ffe0b2; }
+
+.bild-option.answer-correct { border-color: #2e7d32; background: #e8f5e9; }
+.bild-option.answer-wrong { border-color: #c62828; background: #ffebee; }
+
+.strategy-feedback { min-height: 30px; text-align: center; margin-top: 18px; font-size: 1.15rem; font-weight: 600; }
+.strategy-feedback.correct { color: #2e7d32; }
+.strategy-feedback.wrong { color: #c62828; }
+.sterne { display: block; font-size: 2.2rem; color: gold; margin-top: 8px; letter-spacing: 4px; }
+
+#practiceNext { display: block; margin: 18px auto 0; }
+/* display:block wuerde das hidden-Attribut ueberstimmen - der Knopf
+   stuende dann schon vor der Antwort da. */
+#practiceNext[hidden] { display: none; }
+
+/* ============================================
+   Erkläraufgabe
+   ============================================ */
+.guided-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; color: #777; font-size: .9rem; }
+.guided-progress-line { flex: 1; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+.guided-progress-line i { display: block; height: 100%; width: 0; background: var(--color-akzent); transition: width .3s; }
+
+.explanation-visual { text-align: center; margin-bottom: 18px; }
+.ex-bilder { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.ex-bild {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 12px 16px; border-radius: 18px; cursor: pointer;
+    border: 3px solid #eceff1; background: #fff; transition: background .2s, border-color .2s;
+}
+.ex-emoji { font-size: 3rem; line-height: 1; }
+.ex-wort { font-size: 1rem; font-weight: 600; color: #546e7a; }
+.ex-bild.leuchtet { background: #ffe082; border-color: #ffb300; }
+.ex-bild.daneben { background: #ffcdd2; border-color: #c62828; }
+.ex-working { color: #6d4c41; font-size: 1.15rem; margin-top: 14px; }
+.ex-caption { color: #888; font-style: italic; margin-top: 8px; }
+
+.explanation-interaction { text-align: center; margin-bottom: 18px; }
+.ex-ask { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+.ex-hint { color: #d84315; margin-bottom: 12px; }
+.ex-note { color: #888; font-size: .95rem; }
+.ex-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.ex-feedback { font-size: 1.15rem; font-weight: 600; color: #2e7d32; }
+
+.option-btn {
+    font-family: inherit; font-size: 1.3rem; font-weight: 700;
+    min-width: 84px; padding: 14px 20px; border: 3px solid #eee;
+    border-radius: 16px; background: #fff; cursor: pointer;
+}
+.option-btn:hover:enabled { border-color: var(--color-akzent); }
+.option-btn.daneben { border-color: #c62828; background: #ffcdd2; }
+
+.learning-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.learning-step { padding: 12px 16px; border-radius: 12px; background: #f7f7f7; font-size: 1.05rem; }
+.learning-step.done { background: #e8f5e9; }
+.learning-step.offen { color: #bbb; letter-spacing: .3em; }
+
+.guided-controls { display: flex; gap: 12px; justify-content: center; }
+
+/* ============================================
+   Arbeitsblatt
+   ============================================ */
+.worksheet-settings { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.worksheet-preview { display: flex; gap: 30px; flex-wrap: wrap; }
+.worksheet-sheet { flex: 1; min-width: 280px; background: #fafafa; border-radius: 12px; padding: 16px; }
+.worksheet-sheet h4 { margin-bottom: 6px; }
+.ws-anleitung { color: #777; font-size: .9rem; margin-bottom: 12px; }
+.ws-zeile { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+.ws-nr { width: 22px; font-weight: 700; color: #90a4ae; }
+.ws-wort { width: 95px; font-size: 1.05rem; font-weight: 600; }
+.ws-wort.gross { font-size: 2.2rem; }
+.ws-bilder { display: flex; gap: 10px; }
+.ws-kasten {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 46px; height: 46px; font-size: 1.6rem;
+    border: 2px solid #b0bec5; border-radius: 10px; background: #fff;
+}
+.ws-loesung { font-size: 1.05rem; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+
+/* ============================================
+   Kleine Bildschirme
+   ============================================ */
+@media (max-width: 768px) {
+    .main-title { font-size: 2.4rem; }
+    .module-group .button-grid { grid-template-columns: 1fr; }
+    .learning-actions { grid-template-columns: repeat(2, 1fr); }
+    .learning-hero { padding: 22px; }
+    .learning-panel { padding: 18px; }
+    .worksheet-preview { flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+    .bild-option { width: 118px; height: 118px; }
+    .bild-emoji { font-size: 3.2rem; }
+    .hoer-karte { min-width: 200px; padding: 16px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+}
